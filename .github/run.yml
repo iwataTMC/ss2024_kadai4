@@ -1,0 +1,36 @@
+name: Shell Script Test
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Run script.sh
+      run: |
+        chmod +x script.sh
+        ./script.sh 12 18
+      continue-on-error: true
+
+    - name: Run test-script.sh
+      run: |
+        chmod +x test-script.sh
+        ./test-script.sh
+      continue-on-error: true
+
+    - name: Check script.sh exit status
+      if: steps.run-script.outcome == 'failure'
+      run: |
+        echo "script.sh exited with an error"
+        exit 1
+
+    - name: Check test-script.sh exit status
+      if: steps.run-test-script.outcome == 'failure'
+      run: |
+        echo "test-script.sh exited with an error"
+        exit 1
